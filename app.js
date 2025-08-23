@@ -1,56 +1,11 @@
 (function () {
-  const STATION_AREA = "삼성역";
-  const SETTINGS_KEY = "lunchSettingsV1";
+  const DEFAULT_AREA = "삼성역";
+  const SETTINGS_KEY = "lunchSettingsV4"; // include js key
   const LAST_PICK_KEY = "lunchLastPickV1";
 
-  /** @typedef {{id:string,name:string,category:string,priceTier:1|2|3,isSpicy:boolean,description:string,keywords?:string[]}} MenuItem */
+  /** @typedef {{id:string,name:string,category:string,priceTier:1|2|3,isSpicy:boolean,description:string,avgPrice:number,keywords?:string[]}} MenuItem */
 
-  /** @type {MenuItem[]} */
-  const MENU_ITEMS = [
-    { id: "kimbap", name: "김밥/분식", category: "분식/패스트푸드", priceTier: 1, isSpicy: false, description: "김밥, 떡튀순으로 간단히 해결" , keywords:["김밥","분식","분식집"]},
-    { id: "tteokbokki", name: "떡볶이", category: "분식/패스트푸드", priceTier: 1, isSpicy: true, description: "칼칼하게 당기는 매콤달콤 떡볶이" },
-    { id: "kalguksu", name: "칼국수", category: "면/국물", priceTier: 1, isSpicy: false, description: "담백한 면과 진한 국물 한 그릇" },
-    { id: "naengmyeon", name: "냉면", category: "면/국물", priceTier: 2, isSpicy: false, description: "시원하게 당기는 점심 냉면" },
-    { id: "guksu", name: "잔치국수", category: "면/국물", priceTier: 1, isSpicy: false, description: "가볍게 후루룩 국수" },
-    { id: "jjigae", name: "김치찌개", category: "한식", priceTier: 1, isSpicy: true, description: "밥도둑의 정석, 칼칼한 김치찌개" },
-    { id: "doenjang", name: "된장찌개", category: "한식", priceTier: 1, isSpicy: false, description: "구수한 된장향" },
-    { id: "sundubu", name: "순두부", category: "한식", priceTier: 1, isSpicy: true, description: "보글보글 얼큰한 순두부" },
-    { id: "baekban", name: "백반/집밥", category: "한식", priceTier: 1, isSpicy: false, description: "든든한 집밥 한 상" },
-    { id: "bibimbap", name: "비빔밥", category: "한식", priceTier: 1, isSpicy: false, description: "야채 가득 비빔밥" },
-    { id: "dakgalbi", name: "닭갈비", category: "한식", priceTier: 2, isSpicy: true, description: "철판에 볶아먹는 닭갈비" },
-    { id: "bossam", name: "보쌈/족발", category: "한식", priceTier: 2, isSpicy: false, description: "촉촉한 수육과 쌈" },
-    { id: "samgyupsal", name: "삼겹살", category: "한식", priceTier: 3, isSpicy: false, description: "고기는 언제나 진리" },
-    { id: "hansang", name: "한정식", category: "한식", priceTier: 3, isSpicy: false, description: "격식 있게 한 끼" },
-    { id: "sushi", name: "초밥", category: "일식", priceTier: 3, isSpicy: false, description: "회와 샤리의 조화" },
-    { id: "donburi", name: "덮밥(가츠/사케/규)", category: "일식", priceTier: 2, isSpicy: false, description: "가성비 좋은 일식 덮밥" },
-    { id: "ramen", name: "라멘", category: "일식", priceTier: 2, isSpicy: false, description: "진한 육수의 일본식 라멘" },
-    { id: "udon", name: "우동", category: "일식", priceTier: 1, isSpicy: false, description: "담백한 우동 한 그릇" },
-    { id: "tonkatsu", name: "돈까스", category: "일식", priceTier: 2, isSpicy: false, description: "바삭한 돈까스" },
-    { id: "jjamppong", name: "짬뽕", category: "중식", priceTier: 2, isSpicy: true, description: "얼큰한 국물의 짬뽕" },
-    { id: "jjajang", name: "짜장면", category: "중식", priceTier: 1, isSpicy: false, description: "달큰한 춘장 소스" },
-    { id: "friedrice", name: "중식 볶음밥", category: "중식", priceTier: 1, isSpicy: false, description: "불맛 가득 볶음밥" },
-    { id: "mara", name: "마라탕/마라샹궈", category: "중식", priceTier: 2, isSpicy: true, description: "화끈한 마라의 매력" },
-    { id: "pizza", name: "피자", category: "양식", priceTier: 2, isSpicy: false, description: "치즈 듬뿍 피자" },
-    { id: "pasta", name: "파스타", category: "양식", priceTier: 2, isSpicy: false, description: "토마토/크림/오일 파스타" },
-    { id: "steak", name: "스테이크/그릴", category: "양식", priceTier: 3, isSpicy: false, description: "고급스럽게 즐기는 점심" },
-    { id: "salad", name: "샐러드", category: "가벼운 한 끼", priceTier: 2, isSpicy: false, description: "가볍고 건강하게" },
-    { id: "sandwich", name: "샌드위치", category: "가벼운 한 끼", priceTier: 1, isSpicy: false, description: "빵 사이에 든든함" },
-    { id: "burger", name: "버거", category: "분식/패스트푸드", priceTier: 2, isSpicy: false, description: "패티와 번의 클래식 조합" },
-    { id: "mex", name: "브리또/타코", category: "양식", priceTier: 2, isSpicy: true, description: "살사 한 스푼의 매력" },
-    { id: "vietnam", name: "쌀국수/분짜", category: "아시안", priceTier: 2, isSpicy: false, description: "향긋한 베트남식" },
-    { id: "thai", name: "팟타이/똠얌", category: "아시안", priceTier: 2, isSpicy: true, description: "달콤매콤 타이푸드" },
-    { id: "indian", name: "인도 커리/난", category: "아시안", priceTier: 2, isSpicy: true, description: "풍성한 향신료 커리" },
-    { id: "koreanbbq", name: "불고기/직화구이", category: "한식", priceTier: 2, isSpicy: false, description: "불맛 가득 구이" },
-    { id: "dongas", name: "경양식 돈가스", category: "양식", priceTier: 1, isSpicy: false, description: "추억의 경양식" },
-    { id: "gimbap_special", name: "프리미엄 김밥", category: "가벼운 한 끼", priceTier: 2, isSpicy: false, description: "든든한 프리미엄 김밥" },
-    { id: "soba", name: "소바", category: "일식", priceTier: 2, isSpicy: false, description: "시원한 메밀소바" },
-    { id: "katsu_curry", name: "카츠카레/카레", category: "일식", priceTier: 2, isSpicy: false, description: "바삭 카츠 + 카레" },
-    { id: "dak_bokkeum", name: "닭볶음탕", category: "한식", priceTier: 2, isSpicy: true, description: "밥 비벼먹기 좋은 국물" },
-    { id: "jjigae_soup", name: "부대찌개", category: "한식", priceTier: 2, isSpicy: true, description: "푸짐한 햄과 라면사리" },
-    { id: "gopchang", name: "곱창/막창", category: "한식", priceTier: 3, isSpicy: false, description: "쫄깃한 내장구이" },
-    { id: "jokbal", name: "족발", category: "한식", priceTier: 2, isSpicy: false, description: "쫀득쫀득 콜라겐" },
-    { id: "dessert", name: "빵/디저트", category: "카페/디저트", priceTier: 1, isSpicy: false, description: "달달한 디저트로 가볍게" }
-  ];
+  // MENU_ITEMS kept for potential future use; picker now uses Kakao places
 
   const dom = {
     category: document.getElementById("category"),
@@ -63,145 +18,274 @@
     resultTitle: document.getElementById("resultTitle"),
     resultMeta: document.getElementById("resultMeta"),
     resultDesc: document.getElementById("resultDesc"),
-    naverLink: document.getElementById("naverLink"),
     kakaoLink: document.getElementById("kakaoLink"),
-    toast: document.getElementById("toast")
+    toast: document.getElementById("toast"),
+    addressDisplay: document.getElementById("addressDisplay"),
+    walkDisplay: document.getElementById("walkDisplay"),
+    priceCapDisplay: document.getElementById("priceCapDisplay"),
+    openSettings: document.getElementById("openSettings"),
+    settingsModal: document.getElementById("settingsModal"),
+    settingsBackdrop: document.getElementById("settingsBackdrop"),
+    settingsAddress: document.getElementById("settingsAddress"),
+    settingsWalk: document.getElementById("settingsWalk"),
+    settingsPrice: document.getElementById("settingsPrice"),
+    settingsKakaoJsKey: document.getElementById("settingsKakaoJsKey"),
+    settingsKakaoKey: document.getElementById("settingsKakaoKey"),
+    settingsUsePrecise: document.getElementById("settingsUsePrecise"),
+    settingsCancel: document.getElementById("settingsCancel"),
+    settingsSave: document.getElementById("settingsSave")
   };
-
-  function loadSettings() {
-    try {
-      const raw = localStorage.getItem(SETTINGS_KEY);
-      if (!raw) return;
-      const s = JSON.parse(raw);
-      if (s.category) dom.category.value = s.category;
-      if (s.price) dom.price.value = String(s.price);
-      if (typeof s.excludeSpicy === "boolean") dom.excludeSpicy.checked = s.excludeSpicy;
-    } catch {}
-  }
-
-  function saveSettings() {
-    const s = {
-      category: dom.category.value,
-      price: dom.price.value,
-      excludeSpicy: dom.excludeSpicy.checked
-    };
-    try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(s)); } catch {}
-  }
-
-  function loadLastPick() {
-    try {
-      const raw = localStorage.getItem(LAST_PICK_KEY);
-      if (!raw) return null;
-      const item = JSON.parse(raw);
-      if (!item || !item.id) return null;
-      return item;
-    } catch { return null; }
-  }
-
-  function saveLastPick(item) {
-    try { localStorage.setItem(LAST_PICK_KEY, JSON.stringify(item)); } catch {}
-  }
-
-  /** @returns {MenuItem[]} */
-  function getFilteredItems() {
-    const category = dom.category.value;
-    const price = dom.price.value;
-    const excludeSpicy = dom.excludeSpicy.checked;
-    return MENU_ITEMS.filter((m) => {
-      if (category !== "all" && m.category !== category) return false;
-      if (price !== "all" && String(m.priceTier) !== price) return false;
-      if (excludeSpicy && m.isSpicy) return false;
-      return true;
-    });
-  }
-
-  function pickRandom(items) {
-    if (!items.length) return null;
-    const idx = Math.floor(Math.random() * items.length);
-    return items[idx];
-  }
-
-  function priceToSymbol(tier) {
-    return "₩".repeat(Math.max(1, Math.min(3, tier)));
-  }
-
-  function buildSearchQuery(item) {
-    if (item.keywords && item.keywords.length) {
-      return `${item.keywords[0]} ${STATION_AREA}`;
-    }
-    return `${item.name} ${STATION_AREA}`;
-  }
-
-  function buildMapLinks(item) {
-    const query = encodeURIComponent(buildSearchQuery(item));
-    const naver = `https://m.map.naver.com/search2/search.naver?query=${query}`;
-    const kakao = `https://map.kakao.com/?q=${query}`;
-    return { naver, kakao };
-  }
 
   function showToast(message) {
     dom.toast.textContent = message;
     dom.toast.classList.add("show");
-    setTimeout(() => dom.toast.classList.remove("show"), 1600);
+    setTimeout(() => dom.toast.classList.remove("show"), 1800);
   }
 
-  function renderResult(item) {
-    if (!item) {
-      dom.resultCard.classList.add("hidden");
-      return;
+  function loadSettings() {
+    try { const raw = localStorage.getItem(SETTINGS_KEY); return raw ? JSON.parse(raw) : null; } catch { return null; }
+  }
+  function saveSettings(s) { try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(s)); } catch {} }
+
+  function getCurrentSettings() {
+    const loaded = loadSettings();
+    if (loaded) return loaded;
+    return {
+      category: dom.category ? dom.category.value : "all",
+      price: dom.price ? dom.price.value : "all",
+      excludeSpicy: dom.excludeSpicy ? dom.excludeSpicy.checked : false,
+      address: "",
+      walkMinutes: 10,
+      priceCap: 0,
+      kakaoJsKey: "",
+      kakaoKey: "",
+      usePrecise: false
+    };
+  }
+
+  function updateSettingsBar(s) {
+    dom.addressDisplay.textContent = s.address && s.address.trim().length > 0 ? s.address : "미설정";
+    dom.walkDisplay.textContent = `${Number(s.walkMinutes || 10)}분`;
+    dom.priceCapDisplay.textContent = Number(s.priceCap || 0) > 0 ? `${Number(s.priceCap).toLocaleString()}원` : "무제한";
+  }
+
+  function openSettingsModal(prefill) {
+    const s = prefill || getCurrentSettings();
+    dom.settingsAddress.value = s.address || "";
+    dom.settingsWalk.value = s.walkMinutes != null ? String(s.walkMinutes) : "10";
+    dom.settingsPrice.value = s.priceCap != null ? String(s.priceCap) : "0";
+    dom.settingsKakaoJsKey.value = s.kakaoJsKey || "";
+    dom.settingsKakaoKey.value = s.kakaoKey || "";
+    dom.settingsUsePrecise.checked = !!s.usePrecise;
+    dom.settingsModal.classList.remove("hidden");
+  }
+  function closeSettingsModal() { dom.settingsModal.classList.add("hidden"); }
+  function applyModalSettings() {
+    const address = String(dom.settingsAddress.value || "").trim();
+    const walkMinutes = Math.max(1, Math.min(60, Number(dom.settingsWalk.value || 10)));
+    const priceCap = Math.max(0, Number(dom.settingsPrice.value || 0));
+    const kakaoJsKey = String(dom.settingsKakaoJsKey.value || "").trim();
+    const kakaoKey = String(dom.settingsKakaoKey.value || "").trim();
+    const usePrecise = !!dom.settingsUsePrecise.checked;
+    const prev = getCurrentSettings();
+    const next = { ...prev, address, walkMinutes, priceCap, kakaoJsKey, kakaoKey, usePrecise };
+    if (dom.category) next.category = dom.category.value;
+    if (dom.price) next.price = dom.price.value;
+    if (dom.excludeSpicy) next.excludeSpicy = dom.excludeSpicy.checked;
+    saveSettings(next);
+    updateSettingsBar(next);
+    showToast("설정이 저장되었습니다");
+    closeSettingsModal();
+  }
+
+  function getCategoryKeywords(category) {
+    switch (category) {
+      case "한식": return ["한식", "백반", "국밥", "찌개", "비빔밥", "분식"];
+      case "중식": return ["중식", "중국집", "짜장면", "짬뽕", "마라탕"];
+      case "일식": return ["일식", "라멘", "초밥", "돈카츠", "우동", "소바"];
+      case "아시안": return ["베트남 음식", "쌀국수", "타이 음식", "아시안"];
+      case "양식": return ["양식", "파스타", "스테이크", "피자"];
+      case "분식/패스트푸드": return ["분식", "김밥", "버거", "치킨"];
+      case "면/국물": return ["라멘", "칼국수", "우동", "국밥", "짬뽕", "쌀국수"];
+      case "가벼운 한 끼": return ["샌드위치", "샐러드", "김밥"];
+      case "카페/디저트": return ["카페", "디저트", "베이커리"];
+      default: return ["맛집", "식당"];
     }
-    dom.resultTitle.textContent = `${item.name}`;
-    dom.resultMeta.textContent = `${item.category} · ${priceToSymbol(item.priceTier)}${item.isSpicy ? " · 매콤" : ""}`;
-    dom.resultDesc.textContent = item.description || `${STATION_AREA} 인근에서 찾아보세요`;
-    const links = buildMapLinks(item);
-    dom.naverLink.href = links.naver;
-    dom.kakaoLink.href = links.kakao;
+  }
+  function getCategoryGroupCode(category) { return category === "카페/디저트" ? "CE7" : "FD6"; }
+
+  // Kakao JS SDK loader
+  let kakaoSdkPromise = null;
+  function loadKakaoSdk(jsKey) {
+    if (typeof window !== "undefined" && window.kakao && window.kakao.maps && window.kakao.maps.services) {
+      return Promise.resolve(window.kakao);
+    }
+    if (!jsKey) return Promise.reject(new Error("Kakao JS Key missing"));
+    if (!kakaoSdkPromise) {
+      kakaoSdkPromise = new Promise((resolve, reject) => {
+        const s = document.createElement("script");
+        s.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${encodeURIComponent(jsKey)}&libraries=services`;
+        s.async = true;
+        s.onload = () => resolve(window.kakao);
+        s.onerror = () => reject(new Error("Kakao SDK 로드 실패"));
+        document.head.appendChild(s);
+      });
+    }
+    return kakaoSdkPromise;
+  }
+
+  async function geocodeBySdk(address, jsKey) {
+    const kakao = await loadKakaoSdk(jsKey);
+    return new Promise((resolve) => {
+      const geocoder = new kakao.maps.services.Geocoder();
+      geocoder.addressSearch(address, (result, status) => {
+        if (status === kakao.maps.services.Status.OK && result && result[0]) {
+          resolve({ x: Number(result[0].x), y: Number(result[0].y) });
+        } else { resolve(null); }
+      });
+    });
+  }
+
+  async function findNearbyPlacesBySdk(settings) {
+    const s = settings || getCurrentSettings();
+    const kakao = await loadKakaoSdk(s.kakaoJsKey);
+    const center = await geocodeBySdk(s.address, s.kakaoJsKey);
+    if (!center) return [];
+    const radius = minutesToMeters(Number(s.walkMinutes || 10));
+    const keywords = getCategoryKeywords(s.category || "all");
+    const groupCode = getCategoryGroupCode(s.category || "all");
+
+    async function searchWithKeyword(keyword) {
+      return new Promise((resolve) => {
+        const ps = new kakao.maps.services.Places();
+        ps.keywordSearch(keyword, (data, status) => {
+          if (status === kakao.maps.services.Status.OK && Array.isArray(data)) {
+            const filtered = data.filter(d => d.category_group_code === groupCode);
+            resolve(filtered);
+          } else {
+            resolve([]);
+          }
+        }, { location: new kakao.maps.LatLng(center.y, center.x), radius, sort: kakao.maps.services.SortBy.DISTANCE });
+      });
+    }
+
+    for (let i = 0; i < keywords.length; i++) {
+      const docs = await searchWithKeyword(keywords[i]);
+      if (docs.length) return docs;
+    }
+    return [];
+  }
+
+  // REST fallback (may hit CORS in some environments)
+  async function fetchJson(url, headers) { const res = await fetch(url, { headers }); if (!res.ok) throw new Error(`HTTP ${res.status}`); return res.json(); }
+  async function kakaoGeocode(address, kakaoKey) {
+    const url = `https://dapi.kakao.com/v2/local/search/address.json?query=${encodeURIComponent(address)}`;
+    const json = await fetchJson(url, { Authorization: `KakaoAK ${kakaoKey}` });
+    const doc = json && json.documents && json.documents[0];
+    if (!doc) return null; return { x: Number(doc.x), y: Number(doc.y) };
+  }
+  function minutesToMeters(minutes) { const walkingSpeedMps = 1.2; return Math.round(minutes * 60 * walkingSpeedMps); }
+  function getCategoryGroupCodeRest(category) { return getCategoryGroupCode(category); }
+  async function findNearbyPlacesByRest(settings) {
+    const s = settings || getCurrentSettings();
+    const center = await kakaoGeocode(s.address, s.kakaoKey);
+    if (!center) return [];
+    const radius = minutesToMeters(Number(s.walkMinutes || 10));
+    const keywords = getCategoryKeywords(s.category || "all");
+    const groupCode = getCategoryGroupCodeRest(s.category || "all");
+    for (let i = 0; i < keywords.length; i++) {
+      const keyword = keywords[i];
+      const url = `https://dapi.kakao.com/v2/local/search/keyword.json?query=${encodeURIComponent(keyword)}&x=${center.x}&y=${center.y}&radius=${radius}&sort=distance`;
+      try {
+        const json = await fetchJson(url, { Authorization: `KakaoAK ${s.kakaoKey}` });
+        let docs = (json && json.documents) ? json.documents : [];
+        docs = docs.filter(d => d.category_group_code === groupCode);
+        if (docs.length > 0) return docs;
+      } catch (e) {}
+    }
+    return [];
+  }
+
+  function mapPlaceToDisplay(place) {
+    const lat = Number(place.y);
+    const lon = Number(place.x);
+    const name = place.place_name;
+    const categoryName = (place.category_name || "").split(" > ").slice(-1)[0] || place.category_name || "";
+    const address = place.road_address_name || place.address_name || "";
+    return { lat, lon, name, address, categoryName, kakaoPlaceUrl: place.place_url };
+  }
+  function buildLinksForPlace(p) { return { kakao: `https://map.kakao.com/link/to/${encodeURIComponent(p.name)},${p.lat},${p.lon}` }; }
+
+  function renderPlaceResult(p) {
+    dom.resultTitle.textContent = p.name;
+    dom.resultMeta.textContent = `${p.categoryName}`;
+    dom.resultDesc.textContent = p.address;
+    dom.kakaoLink.href = buildLinksForPlace(p).kakao;
     dom.resultCard.classList.remove("hidden");
   }
 
-  async function shareResult(item) {
-    const links = buildMapLinks(item);
-    const text = `${item.name} 어때요? (${item.category}, ${priceToSymbol(item.priceTier)}${item.isSpicy ? ", 매콤" : ""})\n\n카카오맵: ${links.kakao}\n네이버지도: ${links.naver}`;
-    const shareData = { title: `점심 뭐 먹지? - ${STATION_AREA}`, text, url: links.kakao };
-    if (navigator.share) {
-      try { await navigator.share(shareData); return; } catch {}
+  function loadLastPick() { try { const raw = localStorage.getItem(LAST_PICK_KEY); return raw ? JSON.parse(raw) : null; } catch { return null; } }
+  function saveLastPick(item) { try { localStorage.setItem(LAST_PICK_KEY, JSON.stringify(item)); } catch {} }
+
+  async function reroll() {
+    const s = getCurrentSettings();
+    if (!(s.usePrecise && s.address)) { showToast("설정에서 주소/정확한 장소 사용을 확인하세요"); return; }
+
+    let docs = [];
+    if (s.kakaoJsKey) {
+      try { docs = await findNearbyPlacesBySdk(s); } catch (e) { showToast("Kakao JS SDK 검색 실패: 키/도메인 등록 확인"); }
     }
-    try {
-      await navigator.clipboard.writeText(text);
-      showToast("링크가 클립보드에 복사되었습니다");
-    } catch {
-      showToast("복사에 실패했어요. 수동으로 복사해 주세요");
+    if ((!docs || !docs.length) && s.kakaoKey) {
+      try { docs = await findNearbyPlacesByRest(s); } catch (e) { showToast("Kakao REST 호출 실패: 키/CORS 확인"); }
     }
+    if (!docs || !docs.length) { showToast("주변에서 식당을 찾을 수 없어요"); return; }
+
+    const idx = Math.floor(Math.random() * docs.length);
+    const pickedPlace = mapPlaceToDisplay(docs[idx]);
+    saveLastPick({ type: "place", data: pickedPlace });
+    renderPlaceResult(pickedPlace);
   }
 
-  function reroll() {
-    const filtered = getFilteredItems();
-    const pick = pickRandom(filtered);
-    if (!pick) {
-      dom.resultCard.classList.add("hidden");
-      showToast("조건에 맞는 메뉴가 없어요");
-      return;
-    }
-    saveLastPick(pick);
-    renderResult(pick);
+  async function shareResultGeneric() {
+    const last = loadLastPick();
+    if (!last || last.type !== "place") { showToast("먼저 추천을 받아보세요"); return; }
+    const p = last.data;
+    const link = buildLinksForPlace(p).kakao;
+    const text = `${p.name} (${p.categoryName})\n${p.address}\n\n카카오맵: ${link}`;
+    const shareData = { title: `점심 뭐 먹지?`, text, url: link };
+    if (navigator.share) { try { await navigator.share(shareData); return; } catch {} }
+    try { await navigator.clipboard.writeText(text); showToast("링크가 클립보드에 복사되었습니다"); } catch { showToast("복사에 실패했어요"); }
   }
 
   function init() {
-    loadSettings();
-    dom.category.addEventListener("change", () => { saveSettings(); });
-    dom.price.addEventListener("change", () => { saveSettings(); });
-    dom.excludeSpicy.addEventListener("change", () => { saveSettings(); });
-    dom.randomButton.addEventListener("click", () => reroll());
-    dom.rerollButton.addEventListener("click", () => reroll());
-    dom.shareButton.addEventListener("click", () => {
-      const last = loadLastPick();
-      if (last) { shareResult(last); } else { showToast("먼저 추천을 받아보세요"); }
-    });
+    const loaded = loadSettings();
+    if (loaded) {
+      if (dom.category && loaded.category) dom.category.value = loaded.category;
+      if (dom.price && loaded.price) dom.price.value = String(loaded.price);
+      if (dom.excludeSpicy && typeof loaded.excludeSpicy === "boolean") dom.excludeSpicy.checked = loaded.excludeSpicy;
+      updateSettingsBar(loaded);
+    } else {
+      updateSettingsBar(getCurrentSettings());
+    }
+
+    dom.category.addEventListener("change", () => { const s = getCurrentSettings(); s.category = dom.category.value; saveSettings(s); });
+    dom.price.addEventListener("change", () => { const s = getCurrentSettings(); s.price = dom.price.value; saveSettings(s); });
+    dom.excludeSpicy.addEventListener("change", () => { const s = getCurrentSettings(); s.excludeSpicy = dom.excludeSpicy.checked; saveSettings(s); });
+
+    dom.randomButton.addEventListener("click", () => { reroll(); });
+    dom.rerollButton.addEventListener("click", () => { reroll(); });
+    dom.shareButton.addEventListener("click", () => { shareResultGeneric(); });
+
+    dom.openSettings.addEventListener("click", () => openSettingsModal(getCurrentSettings()));
+    dom.settingsBackdrop.addEventListener("click", closeSettingsModal);
+    dom.settingsCancel.addEventListener("click", closeSettingsModal);
+    dom.settingsSave.addEventListener("click", applyModalSettings);
 
     const last = loadLastPick();
-    if (last) {
-      renderResult(last);
-    }
+    if (last && last.type === "place") { renderPlaceResult(last.data); }
+
+    const s = getCurrentSettings();
+    if (!s.address || !s.address.trim()) { setTimeout(() => openSettingsModal(s), 100); }
   }
 
   document.addEventListener("DOMContentLoaded", init);

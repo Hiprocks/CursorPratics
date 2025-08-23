@@ -22,6 +22,8 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+.hidden { display: none; }
+
 .site-header {
   padding: 24px 16px 8px;
   text-align: center;
@@ -38,6 +40,28 @@ body {
   margin: 0 auto;
   padding: 8px 16px 40px;
 }
+
+.settings-bar {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 8px 0 14px;
+}
+@media (min-width: 680px) {
+  .settings-bar { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+.pill {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border: 1px solid var(--border);
+  background: rgba(21,24,35,0.7);
+  border-radius: 12px;
+  padding: 12px;
+}
+.pill .pill-label { color: var(--muted); font-size: 13px; }
+.pill .pill-value { font-size: 16px; }
+.pill.actions { align-items: flex-end; justify-content: center; }
 
 .controls {
   display: grid;
@@ -60,11 +84,11 @@ body {
 
 label { color: var(--muted); font-size: 14px; }
 
-select, input[type="checkbox"] + label, button, .button {
+select, input[type="checkbox"] + label, button, .button, input[type="text"], input[type="number"] {
   font-size: 16px;
 }
 
-select {
+select, input[type="text"], input[type="number"] {
   background: var(--card);
   color: var(--text);
   border: 1px solid var(--border);
@@ -106,6 +130,8 @@ button:active, .button:active { transform: translateY(1px); }
 .card-actions { display: flex; flex-wrap: wrap; gap: 8px; padding: 16px; border-top: 1px solid var(--border); }
 
 #resultTitle { margin: 0 0 6px; font-size: 22px; }
+#resultTitle.result-title { font-size: 28px; }
+.result-sub { font-size: 16px; color: var(--muted); }
 .meta { margin: 0 0 8px; color: var(--muted); }
 .desc { margin: 0; }
 
@@ -132,3 +158,29 @@ button:active, .button:active { transform: translateY(1px); }
   opacity: 1;
   transform: translateX(-50%) translateY(0);
 }
+
+.modal {
+  position: fixed;
+  inset: 0;
+  display: block;
+}
+.modal.hidden { display: none; }
+.modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+}
+.modal-content {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(520px, 92vw);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px;
+}
+.modal-content h2 { margin: 0 0 10px; font-size: 20px; }
+.modal-content .form { display: grid; grid-template-columns: 1fr; gap: 10px; }
+.modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
