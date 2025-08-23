@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>점심 뭐 먹지? - 삼성역</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header class="site-header">
+    <h1>점심 뭐 먹지? <span class="muted">삼성역</span></h1>
+  </header>
+  <main class="container">
+    <section class="controls" aria-label="필터">
+      <div class="control">
+        <label for="category">카테고리</label>
+        <select id="category">
+          <option value="all">모두</option>
+          <option value="한식">한식</option>
+          <option value="중식">중식</option>
+          <option value="일식">일식</option>
+          <option value="아시안">아시안</option>
+          <option value="양식">양식</option>
+          <option value="분식/패스트푸드">분식/패스트푸드</option>
+          <option value="면/국물">면/국물</option>
+          <option value="가벼운 한 끼">가벼운 한 끼</option>
+          <option value="카페/디저트">카페/디저트</option>
+        </select>
+      </div>
+      <div class="control">
+        <label for="price">가격대</label>
+        <select id="price">
+          <option value="all">모두</option>
+          <option value="1">₩</option>
+          <option value="2">₩₩</option>
+          <option value="3">₩₩₩</option>
+        </select>
+      </div>
+      <div class="control checkbox">
+        <input type="checkbox" id="excludeSpicy" />
+        <label for="excludeSpicy">매운 메뉴 제외</label>
+      </div>
+      <div class="control actions">
+        <button id="randomButton" class="primary">랜덤 추천</button>
+      </div>
+    </section>
+
+    <section id="resultCard" class="card hidden" aria-live="polite">
+      <div class="card-body">
+        <h2 id="resultTitle"></h2>
+        <p id="resultMeta" class="meta"></p>
+        <p id="resultDesc" class="desc"></p>
+      </div>
+      <div class="card-actions">
+        <a id="naverLink" class="button" target="_blank" rel="noopener">네이버 지도</a>
+        <a id="kakaoLink" class="button" target="_blank" rel="noopener">카카오 지도</a>
+        <button id="rerollButton" class="button">다시 뽑기</button>
+        <button id="shareButton" class="button">공유/복사</button>
+      </div>
+    </section>
+
+    <section class="hint">
+      <p>결정이 어려울 땐 버튼을 눌러 보세요. 삼성역 인근으로 검색 링크를 제공합니다.</p>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <footer class="site-footer">
+    <small>Made for 삼성역 점심</small>
+  </footer>
+
+  <script src="app.js"></script>
+  <noscript>이 사이트는 자바스크립트가 필요합니다.</noscript>
+</body>
+</html>
